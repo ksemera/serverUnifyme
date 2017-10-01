@@ -30,10 +30,11 @@ router.post('/token', (req, res) => {
     token.identity = identity;
 
     // Serialize the token to a JWT string and include it in a JSON response
-    res.send({
-        identity: identity,
-        token: token.toJwt(),
-    });
+    // res.send({
+    //     identity: identity,
+    //     token: token.toJwt(),
+    // });
+    res.send(token.toJwt());
 });
 
 module.exports = router;
