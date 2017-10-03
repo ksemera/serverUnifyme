@@ -7,7 +7,7 @@ var env = require('../config/env');
 const Twilio = require('twilio').Twilio;
 
 const client = new Twilio(env.twilioAccountSid, env.authToken);
-const service = client.chat.services(env.serviceSid);
+const service = client.chat.services(env.serviceChatSid);
 
 router.get('/list', (req, res) => {
     service.channels

@@ -15,27 +15,23 @@ router.post('/start', (req, res) => {
     // Here, we just use the host for the application making the request,
     // but you can hard code it or use something different if need be
     var salesNumber = env.phoneNumber;
-    var url = 'http://' + req.headers.host + '/outbound/' + encodeURIComponent(salesNumber);
-
-    var options = {
+    var promise = client.calls.create({
+        url: 'https://demo.twilio.com/welcome/voice', // A URL containing TwiML instructions for the call
         to: req.body.phoneNumber,
         from: salesNumber,
-        url: url,
-    };
+    });
 
-    // Place an outbound call to the user, using the TwiML instructions
-    // from the /outbound route
-    client.calls.create(options)
-        .then((message) => {
-            console.log(message.responseText);
-            res.send({
-                message: 'Thank you! We will be calling you shortly.',
-            });
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(500).send(error);
-        });
+
+// You can assign functions to be called, at any time, after the request to
+// Twilio has been completed.  The first function is called when the request
+// succeeds, the second if there was an error.
+    promise.then(function (call) {
+        console.log('Call success! Call SID: ' + call.sid);
+        res.send('success');
+    }, function (error) {
+        console.error('Call failed!  Reason: ' + error.message);
+        res.send('failed');
+    });
 });
 
 // Return TwiML instuctions for the outbound call
