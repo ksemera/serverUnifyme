@@ -14,11 +14,10 @@ router.post('/start', (req, res) => {
     // This should be the publicly accessible URL for your application
     // Here, we just use the host for the application making the request,
     // but you can hard code it or use something different if need be
-    var salesNumber = env.phoneNumber;
     var promise = client.calls.create({
-        url: 'https://demo.twilio.com/welcome/voice', // A URL containing TwiML instructions for the call
-        to: req.body.phoneNumber,
-        from: salesNumber,
+        to: req.body.to,
+        from: req.body.from,
+        url: 'https://handler.twilio.com/twiml/EHee9f2d9a954e1b946bc65467e803b7c5'
     });
 
 

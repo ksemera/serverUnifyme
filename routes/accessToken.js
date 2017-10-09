@@ -5,6 +5,8 @@ var express = require('express');
 var router = express.Router();
 var env = require('../config/env');
 const AccessToken = require('twilio').jwt.AccessToken;
+const ClientCapability = require('twilio').jwt.ClientCapability;
+const client = require('twilio')(env.twilioAccountSid, env.authToken);
 const ChatGrant = AccessToken.ChatGrant;
 const VoiceGrant = AccessToken.VoiceGrant;
 
@@ -40,7 +42,7 @@ router.post('/tokenChat', (req, res) => {
 });
 
 router.post('/tokenVoice', (req, res) => {
-    console.log("REQ CHAT TOKEN:");
+    console.log("REQ VOICE TOKEN:");
     console.log(req.body);
 // Used specifically for creating Voice tokens
     const outgoingApplicationSid = env.serviceVoiceSid;
@@ -59,7 +61,40 @@ router.post('/tokenVoice', (req, res) => {
 
 // Serialize the token to a JWT string
     console.log(token);
-    res.send(token.toJwt());
+
+    //res.send(token.toJwt());
+    res.send({
+        identity: identity,
+        token: token.toJwt(),
+    });
+
+
 });
 
+router.post('/tokenVoiceOutgoing', (req, res) => {
+    const capability = new ClientCapability({
+        accountSid: env.twilioAccountSid,
+        authToken: env.authToken,
+    });
+    capability.addScope(
+        new ClientCapability.OutgoingClientScope({applicationSid: env.serviceVoiceSid})
+    );
+    const token = capability.toJwt();
+
+    client.validationRequests
+        .create({
+            friendlyName: 'My Home Phone Number',
+            phoneNumber: req.body.phoneNumber,
+        })
+        .then(data => {
+            console.log(data);
+
+            //res.send(token.toJwt());
+            res.set('Content-Type', 'application/jwt');
+            res.send(token);
+        });
+
+
+
+});
 module.exports = router;
