@@ -71,7 +71,7 @@ router.post('/tokenVoice', (req, res) => {
 
 });
 
-router.post('/tokenVoiceOutgoing', (req, res) => {
+router.post('/tokenVoiceMultiCap', (req, res) => {
     const capability = new ClientCapability({
         accountSid: env.twilioAccountSid,
         authToken: env.authToken,
@@ -79,22 +79,33 @@ router.post('/tokenVoiceOutgoing', (req, res) => {
     capability.addScope(
         new ClientCapability.OutgoingClientScope({applicationSid: env.serviceVoiceSid})
     );
+    capability.addScope(
+        new ClientCapability.IncomingClientScope(req.body.deviceID)
+    );
     const token = capability.toJwt();
 
+    console.log("------------------------------");
+    console.log("TOKEN: " + token);
+    console.log("------------------------------");
+
+    //res.send(token.toJwt());
+    res.set('Content-Type', 'application/jwt');
+    res.send(token);
+});
+
+router.post('/validation', (req, res) => {
     client.validationRequests
         .create({
-            friendlyName: 'My Home Phone Number',
+            friendlyName: req.body.friendlyName,
             phoneNumber: req.body.phoneNumber,
         })
         .then(data => {
             console.log(data);
-
-            //res.send(token.toJwt());
-            res.set('Content-Type', 'application/jwt');
-            res.send(token);
-        });
-
-
-
+            res.send("Validation DONE")
+        })
+        .catch(err=> {
+          res.send("Error: " , err.message);
+        })
 });
+
 module.exports = router;
