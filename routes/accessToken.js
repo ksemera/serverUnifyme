@@ -99,13 +99,17 @@ router.post('/validation', (req, res) => {
             friendlyName: req.body.friendlyName,
             phoneNumber: req.body.phoneNumber,
         })
-        .then(data => {
-            console.log(data);
-            res.send("Validation DONE")
-        })
-        .catch(err=> {
-          res.send("Error: " , err.message);
-        })
+        .then(() => res.send("Validation DONE"))
+        .catch(err => res.send("Error: ", err.message))
 });
 
+router.post('/callerIdByNumb', (req) => {
+    client.api.accounts(env.twilioAccountSid)
+        .outgoingCallerIds
+        // filter callerids to include only those that have the following number
+        .each({phoneNumber: req.phoneNumber},
+            (callerId) => console.log(callerId));
+
+    res.send("Ok")
+});
 module.exports = router;
