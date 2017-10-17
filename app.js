@@ -1,16 +1,23 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var accessToken = require('./routes/accessToken');
 var channels = require('./routes/channels');
+var login = require ('./routes/login');
 var call = require('./routes/call');
 
 
 var app = express();
+require('mongoose-middleware').initialize(mongoose);
+mongoose.connect('mongodb://localhost:27017/Login', function(err) {
+    if(err) throw err;
+    console.log('Conectados con éxito a la Base de Datos');
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,6 +35,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/auth', accessToken);
 app.use('/channels', channels);
 app.use('/call', call);
+app.use('/access', login);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
