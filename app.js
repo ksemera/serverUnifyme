@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var accessToken = require('./routes/accessToken');
 var channels = require('./routes/channels');
-var login = require ('./routes/login');
+var login = require ('./lib/login');
 var call = require('./routes/call');
 
 
